@@ -1,0 +1,19 @@
+{
+  "to_do_list_app_bar": "To Do List",
+  "settings_app_bar": "Settings",
+  "language": "Language",
+  "english": "English",
+  "arabic": "Arabic",
+  "theme_mode": "Mode",
+  "light_mode": "Light Mode",
+  "dark_mode": "Dark Mode",
+  "add_task": "Add new task",
+  "task_title": "enter your task title",
+  "task_details": "enter your task details",
+  "select_date": "Select date",
+  "add_button": "Add",
+  "error_task_title": "please enter task title",
+  "error_task_details": "please enter task details",
+  "edit_task": "Edit Task",
+  "save_button": "Save Changes"
+}
