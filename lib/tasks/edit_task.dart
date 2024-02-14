@@ -15,7 +15,7 @@ class EditTask extends StatefulWidget {
 }
 
 class _EditTaskState extends State<EditTask> {
-  late DateTime date;
+  late DateTime? date;
   FocusNode titleFocus = FocusNode();
   FocusNode detailFocus = FocusNode();
 
@@ -26,7 +26,7 @@ class _EditTaskState extends State<EditTask> {
     var args = ModalRoute.of(context)?.settings.arguments as Task;
     var provider = Provider.of<AppConfigProvider>(context);
 
-    date = args.taskDate;
+    date = args.date;
     AppLocalizations? appLocalizations = AppLocalizations.of(context);
     return Scaffold(
       appBar: AppBar(
@@ -73,7 +73,7 @@ class _EditTaskState extends State<EditTask> {
                       }
                       return null;
                     },
-                    controller: TextEditingController(text: args.taskTitle),
+                    controller: TextEditingController(text: args.title),
                     decoration: InputDecoration(
                         enabledBorder: UnderlineInputBorder(
                           borderSide: BorderSide(
@@ -89,7 +89,7 @@ class _EditTaskState extends State<EditTask> {
                     maxLines: 1,
                     focusNode: titleFocus,
                     onChanged: (value) {
-                      args.taskTitle = value;
+                      args.title = value;
                     },
                     style: provider.isDarkMode()
                         ? Theme.of(context)
@@ -112,7 +112,7 @@ class _EditTaskState extends State<EditTask> {
                       }
                       return null;
                     },
-                    controller: TextEditingController(text: args.taskDetails),
+                    controller: TextEditingController(text: args.details),
                     decoration: InputDecoration(
                         enabledBorder: UnderlineInputBorder(
                           borderSide: BorderSide(
@@ -128,7 +128,7 @@ class _EditTaskState extends State<EditTask> {
                     maxLines: 4,
                     focusNode: detailFocus,
                     onChanged: (value) {
-                      args.taskDetails = value;
+                      args.details = value;
                     },
                     style: provider.isDarkMode()
                         ? Theme.of(context)
@@ -167,7 +167,7 @@ class _EditTaskState extends State<EditTask> {
                         selectDate();
                       },
                       child: Text(
-                        "${args.taskDate.year}/${args.taskDate.month}/${args.taskDate.day}",
+                        "${args.date?.year}/${args.date?.month}/${args.date?.day}",
                         textAlign: TextAlign.start,
                         style: provider.isDarkMode()
                             ? Theme.of(context).textTheme.titleLarge?.copyWith(

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
+import 'package:to_do_app/firebaseUtils.dart';
+import 'package:to_do_app/model/task_model.dart';
 import 'package:to_do_app/my_theme.dart';
 import 'package:to_do_app/provider/app_config_provider.dart';
 
@@ -12,8 +14,11 @@ class AddTaskBottomSheet extends StatefulWidget {
 }
 
 class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
-  DateTime date = DateTime.now();
   var formKey = GlobalKey<FormState>();
+  String? taskTitle;
+  String? taskDetails;
+
+  DateTime taskDate = DateTime.now();
 
   @override
   Widget build(BuildContext context) {
@@ -71,7 +76,9 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
                             ?.copyWith(color: MyTheme.greyColor, fontSize: 20)),
                 maxLines: 1,
                 focusNode: FocusNode(),
-                onChanged: (value) {},
+                onChanged: (value) {
+                  taskTitle = value;
+                },
                 style: provider.isDarkMode()
                     ? Theme.of(context)
                         .textTheme
@@ -111,7 +118,9 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
                             ?.copyWith(color: MyTheme.greyColor, fontSize: 20)),
                 maxLines: 4,
                 focusNode: FocusNode(),
-                onChanged: (value) {},
+                onChanged: (value) {
+                  taskDetails = value;
+                },
                 style: provider.isDarkMode()
                     ? Theme.of(context)
                         .textTheme
@@ -144,7 +153,7 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
                     selectDate();
                   },
                   child: Text(
-                    "${date.year}/${date.month}/${date.day}",
+                    "${taskDate.year}/${taskDate.month}/${taskDate.day}",
                     textAlign: TextAlign.start,
                     style: provider.isDarkMode()
                         ? Theme.of(context).textTheme.titleLarge?.copyWith(
@@ -187,11 +196,83 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
         firstDate: DateTime.now(),
         lastDate: DateTime.now().add(const Duration(days: 365)));
 
-    date = selectedDate ?? date;
+    taskDate = selectedDate ?? taskDate;
+
     setState(() {});
   }
 
   void addTask() {
-    if (formKey.currentState?.validate() == true) {}
+    if (formKey.currentState?.validate() == true) {
+      FirebaseUtils.addTaskToFirestore(
+              Task(title: taskTitle, details: taskDetails, date: taskDate))
+          .timeout(
+        const Duration(milliseconds: 500),
+        onTimeout: () {},
+      );
+      Navigator.of(context).pop();
+
+      // show snackBar
+      // ScaffoldMessenger.of(context).showSnackBar(showSnackbar(taskTitle));
+
+      // show Toast
+      // showToast(taskTitle);
+
+      // show alert dialog
+      // _showMyDialog(taskTitle);
+    }
   }
+
+// void showToast(String? taskTitle) {
+//   Fluttertoast.showToast(
+//       msg: "√ $taskTitle is added successfully",
+//       toastLength: Toast.LENGTH_SHORT,
+//       gravity: ToastGravity.BOTTOM,
+//       timeInSecForIosWeb: 1,
+//       backgroundColor: MyTheme.backgroundDarkColor,
+//       textColor: Colors.white,
+//       fontSize: 16.0);
+// }
+
+// SnackBar showSnackbar(String? taskTitle) {
+//   return SnackBar(
+//     content: Text("√ $taskTitle is added successfully"),
+//     backgroundColor: MyTheme.backgroundDarkColor,
+//     duration: const Duration(milliseconds: 1000),
+//   );
+// }
+
+// Future<void> _showMyDialog(String? taskTitle) async {
+//   return showDialog<void>(
+//     context: context,
+//     barrierDismissible: false, // user must tap button!
+//     builder: (BuildContext context) {
+//       return AlertDialog(
+//         title: const Text(
+//           'Success',
+//           textAlign: TextAlign.center,
+//         ),
+//         content: SingleChildScrollView(
+//           child: ListBody(
+//             children: <Widget>[
+//               Text("√ $taskTitle is added successfully"),
+//             ],
+//           ),
+//         ),
+//         alignment: Alignment.center,
+//         actionsAlignment: MainAxisAlignment.center,
+//         actions: <Widget>[
+//           ElevatedButton(
+//             child: const Text(
+//               'Ok',
+//               textAlign: TextAlign.center,
+//             ),
+//             onPressed: () {
+//               Navigator.of(context).pop();
+//             },
+//           ),
+//         ],
+//       );
+//     },
+//   );
+// }
 }

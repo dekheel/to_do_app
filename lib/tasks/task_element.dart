@@ -62,16 +62,16 @@ class TaskElement extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         Text(
-                          task.taskTitle,
+                          task.title!,
                           style: Theme.of(context).textTheme.titleLarge,
                         ),
                         Padding(
                           padding: const EdgeInsets.symmetric(
                               vertical: 10.0, horizontal: 20),
                           child: Text(
-                            "${task.taskDate.day}/"
-                            "${task.taskDate.month}/"
-                            "${task.taskDate.year}",
+                            "${task.date?.day}/"
+                            "${task.date?.month}/"
+                            "${task.date?.year}",
                             style: Theme.of(context)
                                 .textTheme
                                 .bodySmall

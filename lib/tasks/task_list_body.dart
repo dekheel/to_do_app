@@ -120,9 +120,9 @@ class ToDoList extends StatelessWidget {
               itemBuilder: (context, index) {
                 return TaskElement(
                     task: Task(
-                        taskDate: DateTime.now().add(Duration(days: index)),
-                        taskDetails: "${(index + 1) * 11111111111}",
-                        taskTitle: "Play Football ${index + 1}"));
+                        date: DateTime.now().add(Duration(days: index)),
+                        details: "${(index + 1) * 11111111111}",
+                        title: "Play Football ${index + 1}"));
               },
               itemCount: 10,
             ),
