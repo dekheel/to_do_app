@@ -1,0 +1,19 @@
+{
+  "to_do_list_app_bar": "قائمة المهام",
+  "settings_app_bar": "الإعدادات",
+  "language": "اللغة",
+  "english": "الانجليزية",
+  "arabic": "العربية",
+  "theme_mode": "النمط",
+  "light_mode": "النمط الفاتح",
+  "dark_mode": "النمط الداكن",
+  "add_task": "اضافة مهمة جديدة",
+  "task_title": "رجاء ادخال عنوان المهمة",
+  "task_details": "رجاء ادخال تفاصيل المهمة",
+  "select_date": "اختار التاريخ",
+  "add_button": "اضافة",
+  "error_task_title": "يجب ادخال عنوان المهمة",
+  "error_task_details": "يجب ادخال تفاصيل المهمة",
+  "edit_task": "تعديل مهمة",
+  "save_button": "حفظ التغييرات"
+}
