@@ -1,17 +1,30 @@
 import 'package:easy_date_timeline/easy_date_timeline.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:to_do_app/model/task_model.dart';
 import 'package:to_do_app/my_theme.dart';
 import 'package:to_do_app/provider/app_config_provider.dart';
+import 'package:to_do_app/provider/tasks_provider.dart';
+import 'package:to_do_app/provider/user_provider.dart';
+import 'package:to_do_app/tasks/no_task.dart';
 import 'package:to_do_app/tasks/task_element.dart';
 
-class ToDoList extends StatelessWidget {
+class ToDoList extends StatefulWidget {
   const ToDoList({super.key});
 
   @override
+  State<ToDoList> createState() => _ToDoListState();
+}
+
+class _ToDoListState extends State<ToDoList> {
+  @override
   Widget build(BuildContext context) {
     var provider = Provider.of<AppConfigProvider>(context);
+    var taskProvider = Provider.of<TaskProvider>(context);
+    var authProvider = Provider.of<AuthProviders>(context);
+
+    if (taskProvider.taskList.isEmpty) {
+      taskProvider.getAllFirebaseTasks(authProvider.currentUser!.id!);
+    }
     return Padding(
       padding: const EdgeInsets.only(bottom: 17.0),
       child: Column(
@@ -19,9 +32,10 @@ class ToDoList extends StatelessWidget {
           EasyDateTimeLine(
             timeLineProps: const EasyTimeLineProps(separatorPadding: 12),
             locale: provider.appLanguage,
-            initialDate: DateTime.now(),
+            initialDate: taskProvider.initialDate,
             onDateChange: (selectedDate) {
-              //`selectedDate` the new date selected.
+              taskProvider.changeInitialDate(
+                  selectedDate, authProvider.currentUser!.id!);
             },
             headerProps: EasyHeaderProps(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -32,9 +46,9 @@ class ToDoList extends StatelessWidget {
                         .bodySmall
                         ?.copyWith(color: MyTheme.whiteColor)
                     : Theme.of(context)
-                        .textTheme
-                        .bodySmall
-                        ?.copyWith(color: MyTheme.blackColor),
+                    .textTheme
+                    .bodySmall
+                    ?.copyWith(color: MyTheme.blackColor),
                 monthPickerType: MonthPickerType.dropDown,
                 dateFormatter: const DateFormatter.fullDateDMonthAsStrY(),
                 showMonthPicker: true,
@@ -42,31 +56,31 @@ class ToDoList extends StatelessWidget {
                 showHeader: true,
                 selectedDateStyle: provider.isDarkMode()
                     ? Theme.of(context)
-                        .textTheme
-                        .bodySmall
-                        ?.copyWith(color: MyTheme.whiteColor)
+                    .textTheme
+                    .bodySmall
+                    ?.copyWith(color: MyTheme.whiteColor)
                     : Theme.of(context)
-                        .textTheme
-                        .bodySmall
-                        ?.copyWith(color: MyTheme.blackColor)),
+                    .textTheme
+                    .bodySmall
+                    ?.copyWith(color: MyTheme.blackColor)),
             dayProps: EasyDayProps(
               todayStyle: DayStyle(
                   dayNumStyle: provider.isDarkMode()
                       ? Theme.of(context)
-                          .textTheme
-                          .bodySmall
-                          ?.copyWith(color: MyTheme.blackColor)
+                      .textTheme
+                      .bodySmall
+                      ?.copyWith(color: MyTheme.blackColor)
                       : Theme.of(context).textTheme.bodySmall!.copyWith(
-                            color: MyTheme.blackColor,
-                          ),
+                    color: MyTheme.blackColor,
+                  ),
                   dayStrStyle: provider.isDarkMode()
                       ? Theme.of(context)
-                          .textTheme
-                          .bodySmall
-                          ?.copyWith(color: MyTheme.blackColor)
+                      .textTheme
+                      .bodySmall
+                      ?.copyWith(color: MyTheme.blackColor)
                       : Theme.of(context).textTheme.bodySmall!.copyWith(
-                            color: MyTheme.blackColor,
-                          ),
+                    color: MyTheme.blackColor,
+                  ),
                   decoration: BoxDecoration(
                     color: MyTheme.greenColor,
                     borderRadius: BorderRadius.circular(10),
@@ -76,21 +90,21 @@ class ToDoList extends StatelessWidget {
               inactiveDayStyle: DayStyle(
                 dayNumStyle: provider.isDarkMode()
                     ? Theme.of(context)
-                        .textTheme
-                        .bodySmall
-                        ?.copyWith(color: MyTheme.whiteColor)
+                    .textTheme
+                    .bodySmall
+                    ?.copyWith(color: MyTheme.whiteColor)
                     : Theme.of(context).textTheme.bodySmall!.copyWith(
-                          color: MyTheme.blackColor,
-                        ),
+                  color: MyTheme.blackColor,
+                ),
                 dayStrStyle: provider.isDarkMode()
                     ? Theme.of(context)
-                        .textTheme
-                        .bodySmall
-                        ?.copyWith(color: MyTheme.whiteColor)
+                    .textTheme
+                    .bodySmall
+                    ?.copyWith(color: MyTheme.whiteColor)
                     : Theme.of(context)
-                        .textTheme
-                        .bodySmall!
-                        .copyWith(color: MyTheme.blackColor),
+                    .textTheme
+                    .bodySmall!
+                    .copyWith(color: MyTheme.blackColor),
                 decoration: BoxDecoration(
                     borderRadius: const BorderRadius.all(Radius.circular(8)),
                     color: provider.isDarkMode()
@@ -116,16 +130,14 @@ class ToDoList extends StatelessWidget {
             height: 10,
           ),
           Expanded(
-            child: ListView.builder(
-              itemBuilder: (context, index) {
-                return TaskElement(
-                    task: Task(
-                        date: DateTime.now().add(Duration(days: index)),
-                        details: "${(index + 1) * 11111111111}",
-                        title: "Play Football ${index + 1}"));
-              },
-              itemCount: 10,
-            ),
+            child: taskProvider.taskList.isEmpty
+                ? const NoTask()
+                : ListView.builder(
+                    itemBuilder: (context, index) {
+                      return TaskElement(task: taskProvider.taskList[index]);
+                    },
+                    itemCount: taskProvider.taskList.length,
+                  ),
           ),
         ],
       ),
