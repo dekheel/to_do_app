@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
+import 'package:to_do_app/dialog_utils.dart';
+import 'package:to_do_app/firebaseUtils.dart';
+import 'package:to_do_app/model/task_model.dart';
 import 'package:to_do_app/my_theme.dart';
 import 'package:to_do_app/provider/app_config_provider.dart';
+import 'package:to_do_app/provider/tasks_provider.dart';
+import 'package:to_do_app/provider/user_provider.dart';
 
 class AddTaskBottomSheet extends StatefulWidget {
   const AddTaskBottomSheet({super.key});
@@ -12,14 +17,28 @@ class AddTaskBottomSheet extends StatefulWidget {
 }
 
 class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
-  DateTime date = DateTime.now();
   var formKey = GlobalKey<FormState>();
+  String? taskTitle;
+  String? taskDetails;
+  late AppConfigProvider appConfigProvider;
+
+  late TaskProvider taskProvider;
+
+  late AppLocalizations? appLocalization;
+
+  late AuthProviders? authProvider;
+
+  DateTime taskDate = DateTime.now();
+
+  FocusNode titleFocus = FocusNode();
+  FocusNode detailFocus = FocusNode();
 
   @override
   Widget build(BuildContext context) {
-    AppLocalizations? appLocalization = AppLocalizations.of(context);
-    var provider = Provider.of<AppConfigProvider>(context);
-
+    appLocalization = AppLocalizations.of(context);
+    appConfigProvider = Provider.of<AppConfigProvider>(context);
+    authProvider = Provider.of<AuthProviders>(context);
+    taskProvider = Provider.of<TaskProvider>(context);
     return Form(
       key: formKey,
       child: SingleChildScrollView(
@@ -31,7 +50,7 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
               child: Center(
                 child: Text(
                   appLocalization!.add_task,
-                  style: provider.isDarkMode()
+                  style: appConfigProvider.isDarkMode()
                       ? Theme.of(context)
                           .textTheme
                           .titleLarge
@@ -48,19 +67,19 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
               child: TextFormField(
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return appLocalization.error_task_title;
+                    return appLocalization!.error_task_title;
                   }
                   return null;
                 },
                 decoration: InputDecoration(
                     enabledBorder: UnderlineInputBorder(
                       borderSide: BorderSide(
-                          color: provider.isDarkMode()
+                          color: appConfigProvider.isDarkMode()
                               ? MyTheme.whiteColor
                               : MyTheme.greyColor),
                     ),
-                    hintText: appLocalization.task_title,
-                    hintStyle: provider.isDarkMode()
+                    hintText: appLocalization!.task_title,
+                    hintStyle: appConfigProvider.isDarkMode()
                         ? Theme.of(context)
                             .textTheme
                             .titleLarge
@@ -70,9 +89,11 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
                             .titleLarge
                             ?.copyWith(color: MyTheme.greyColor, fontSize: 20)),
                 maxLines: 1,
-                focusNode: FocusNode(),
-                onChanged: (value) {},
-                style: provider.isDarkMode()
+                focusNode: titleFocus,
+                onChanged: (value) {
+                  taskTitle = value;
+                },
+                style: appConfigProvider.isDarkMode()
                     ? Theme.of(context)
                         .textTheme
                         .titleLarge
@@ -88,19 +109,19 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
               child: TextFormField(
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return appLocalization.error_task_details;
+                    return appLocalization!.error_task_details;
                   }
                   return null;
                 },
                 decoration: InputDecoration(
                     enabledBorder: UnderlineInputBorder(
                       borderSide: BorderSide(
-                          color: provider.isDarkMode()
+                          color: appConfigProvider.isDarkMode()
                               ? MyTheme.whiteColor
                               : MyTheme.greyColor),
                     ),
-                    hintText: appLocalization.task_details,
-                    hintStyle: provider.isDarkMode()
+                    hintText: appLocalization!.task_details,
+                    hintStyle: appConfigProvider.isDarkMode()
                         ? Theme.of(context)
                             .textTheme
                             .titleLarge
@@ -110,13 +131,14 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
                             .titleLarge
                             ?.copyWith(color: MyTheme.greyColor, fontSize: 20)),
                 maxLines: 4,
-                focusNode: FocusNode(),
-                onChanged: (value) {},
-                style: provider.isDarkMode()
+                focusNode: detailFocus,
+                onChanged: (value) {
+                  taskDetails = value;
+                },
+                style: appConfigProvider.isDarkMode()
                     ? Theme.of(context)
                         .textTheme
                         .titleLarge
-                        ?.copyWith(color: MyTheme.whiteColor)
                         ?.copyWith(color: MyTheme.whiteColor)
                     : Theme.of(context)
                         .textTheme
@@ -127,9 +149,9 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
               child: Text(
-                appLocalization.select_date,
+                appLocalization!.select_date,
                 textAlign: TextAlign.start,
-                style: provider.isDarkMode()
+                style: appConfigProvider.isDarkMode()
                     ? Theme.of(context).textTheme.titleLarge?.copyWith(
                         color: MyTheme.whiteColor, fontFamily: "Inter-Regular")
                     : Theme.of(context).textTheme.titleLarge?.copyWith(
@@ -144,9 +166,9 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
                     selectDate();
                   },
                   child: Text(
-                    "${date.year}/${date.month}/${date.day}",
+                    "${taskDate.year}/${taskDate.month}/${taskDate.day}",
                     textAlign: TextAlign.start,
-                    style: provider.isDarkMode()
+                    style: appConfigProvider.isDarkMode()
                         ? Theme.of(context).textTheme.titleLarge?.copyWith(
                             color: MyTheme.whiteColor,
                             fontSize: 18,
@@ -163,10 +185,10 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
               child: ElevatedButton(
                 onPressed: () {
-                  addTask();
+                  addTask(context);
                 },
                 child: Text(
-                  appLocalization.add_button,
+                  appLocalization!.add_button,
                   style: Theme.of(context).textTheme.titleLarge?.copyWith(
                       fontSize: 18,
                       color: MyTheme.whiteColor,
@@ -187,11 +209,48 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
         firstDate: DateTime.now(),
         lastDate: DateTime.now().add(const Duration(days: 365)));
 
-    date = selectedDate ?? date;
+    taskDate = selectedDate ?? taskDate;
+
     setState(() {});
   }
 
-  void addTask() {
-    if (formKey.currentState?.validate() == true) {}
+  void addTask(BuildContext context) {
+    if (formKey.currentState?.validate() == true) {
+      Task task = Task(title: taskTitle, details: taskDetails, date: taskDate);
+
+      FirebaseUtils.addNewTaskToFirestore(
+              Task(title: taskTitle, details: taskDetails, date: taskDate),
+              authProvider!.currentUser!.id!,
+              context)
+          .then((value) {
+        DialogUtils.hideLoading(context);
+        DialogUtils.showMessage(
+            context: context,
+            content: "${task.title} ${appLocalization!.adding_task_success}",
+            title: appLocalization!.success,
+            posActions: appLocalization!.ok,
+            posFunction: (context) {
+              Navigator.of(context).pop();
+              Navigator.of(context).pop();
+              taskProvider.getAllFirebaseTasks(authProvider!.currentUser!.id!);
+            });
+      }).timeout(
+        const Duration(milliseconds: 500),
+        onTimeout: () {
+          DialogUtils.hideLoading(context);
+          DialogUtils.showMessage(
+              context: context,
+              content: "${task.title} ${appLocalization!.adding_task_success}",
+              title: appLocalization!.success,
+              posActions: appLocalization!.ok,
+              posFunction: (context) {
+                Navigator.of(context).pop();
+                Navigator.of(context).pop();
+                taskProvider
+                    .getAllFirebaseTasks(authProvider!.currentUser!.id!);
+              });
+        },
+      );
+    }
   }
 }
