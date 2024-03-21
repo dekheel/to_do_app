@@ -3,14 +3,14 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:to_do_app/my_theme.dart';
 
 class CustomElevatedButton extends StatelessWidget {
-  bool getColor;
+  bool enable;
 
   void Function()? onPressed;
 
   String buttonText;
 
   CustomElevatedButton(
-      {required this.getColor,
+      {required this.enable,
       required this.onPressed,
       super.key,
       required this.buttonText});
@@ -28,8 +28,8 @@ class CustomElevatedButton extends StatelessWidget {
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
               backgroundColor:
-                  getColor ? MyTheme.primaryColor : MyTheme.whiteColor),
-          onPressed: onPressed,
+                  enable ? MyTheme.primaryColor : MyTheme.whiteColor),
+          onPressed: enable ? onPressed : null,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -37,12 +37,12 @@ class CustomElevatedButton extends StatelessWidget {
                 buttonText,
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
                     fontSize: 18,
-                    color: getColor ? MyTheme.whiteColor : MyTheme.greyColor,
+                    color: enable ? MyTheme.whiteColor : MyTheme.greyColor,
                     fontFamily: "Inter-Regular"),
               ),
               Icon(
                 Icons.arrow_forward,
-                color: getColor ? MyTheme.whiteColor : MyTheme.greyColor,
+                color: enable ? MyTheme.whiteColor : MyTheme.greyColor,
                 size: 40,
               )
             ],

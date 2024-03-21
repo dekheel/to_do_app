@@ -9,7 +9,6 @@ import 'package:to_do_app/home/home_screen.dart';
 import 'package:to_do_app/model/task_model.dart';
 import 'package:to_do_app/model/user_model.dart';
 import 'package:to_do_app/my_theme.dart';
-import 'package:to_do_app/provider/app_config_provider.dart';
 import 'package:to_do_app/provider/tasks_provider.dart';
 import 'package:to_do_app/provider/user_provider.dart';
 
@@ -114,59 +113,59 @@ class FirebaseUtils {
     }
   }
 
-  static Future<void> signInFirebase(
-      String emailAddress, String password, BuildContext context) async {
-    AppLocalizations appLocalization = AppLocalizations.of(context)!;
-    var user_provider = Provider.of<AuthProviders>(context, listen: false);
-
-    DialogUtils.showLoading(
-        context: context, loadingMessage: appLocalization.signing_in);
-
-    await Future.delayed(const Duration(seconds: 2));
-    try {
-      final credential = await FirebaseAuth.instance
-          .signInWithEmailAndPassword(email: emailAddress, password: password);
-      DialogUtils.hideLoading(context);
-
-      var user = await readUserFromFirestore(credential.user!.uid);
-
-      user_provider.updateUser(user);
-
-      if (user == null) {
-        return;
-      }
-
-      Navigator.pushNamedAndRemoveUntil(
-          context, HomeScreen.routeName, (Route<dynamic> route) => false);
-
-      var app_provider = Provider.of<AppConfigProvider>(context, listen: false);
-
-      app_provider.changeEmail(emailAddress);
-
-      Fluttertoast.showToast(
-        msg: "√ ${appLocalization.logged_in_success}",
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.SNACKBAR,
-        timeInSecForIosWeb: 1,
-        backgroundColor: MyTheme.greenColor,
-        textColor: MyTheme.blackDarkColor,
-        fontSize: 16.0,
-      );
-    } on FirebaseAuthException catch (e) {
-      DialogUtils.hideLoading(context);
-
-      if (e.code == 'invalid-credential') {
-        DialogUtils.showMessage(
-            context: context,
-            content: e.code,
-            title: appLocalization.error_word,
-            posActions: appLocalization.ok);
-      }
-    } catch (e) {
-      DialogUtils.hideLoading(context);
-      DialogUtils.showMessage(context: context, content: e.toString());
-    }
-  }
+  // static Future<void> signInFirebase(
+  //     String emailAddress, String password, BuildContext context) async {
+  //   AppLocalizations appLocalization = AppLocalizations.of(context)!;
+  //   var user_provider = Provider.of<AuthProviders>(context, listen: false);
+  //
+  //   DialogUtils.showLoading(
+  //       context: context, loadingMessage: appLocalization.signing_in);
+  //
+  //   await Future.delayed(const Duration(seconds: 2));
+  //   try {
+  //     final credential = await FirebaseAuth.instance
+  //         .signInWithEmailAndPassword(email: emailAddress, password: password);
+  //     DialogUtils.hideLoading(context);
+  //
+  //     var user = await readUserFromFirestore(credential.user!.uid);
+  //
+  //     user_provider.updateUser(user);
+  //
+  //     if (user == null) {
+  //       return;
+  //     }
+  //
+  //     Navigator.pushNamedAndRemoveUntil(
+  //         context, HomeScreen.routeName, (Route<dynamic> route) => false);
+  //
+  //     var app_provider = Provider.of<AppConfigProvider>(context, listen: false);
+  //
+  //     app_provider.changeEmail(emailAddress);
+  //
+  //     Fluttertoast.showToast(
+  //       msg: "√ ${appLocalization.logged_in_success}",
+  //       toastLength: Toast.LENGTH_SHORT,
+  //       gravity: ToastGravity.SNACKBAR,
+  //       timeInSecForIosWeb: 1,
+  //       backgroundColor: MyTheme.greenColor,
+  //       textColor: MyTheme.blackDarkColor,
+  //       fontSize: 16.0,
+  //     );
+  //   } on FirebaseAuthException catch (e) {
+  //     DialogUtils.hideLoading(context);
+  //
+  //     if (e.code == 'invalid-credential') {
+  //       DialogUtils.showMessage(
+  //           context: context,
+  //           content: e.code,
+  //           title: appLocalization.error_word,
+  //           posActions: appLocalization.ok);
+  //     }
+  //   } catch (e) {
+  //     DialogUtils.hideLoading(context);
+  //     DialogUtils.showMessage(context: context, content: e.toString());
+  //   }
+  // }
 
   static Future<void> ResetPassFirebase(
       String emailAddress, BuildContext context) async {

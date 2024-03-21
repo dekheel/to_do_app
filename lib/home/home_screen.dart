@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
-import 'package:to_do_app/authentication/login.dart';
+import 'package:to_do_app/authentication/login/login.dart';
 import 'package:to_do_app/my_theme.dart';
 import 'package:to_do_app/provider/app_config_provider.dart';
 import 'package:to_do_app/provider/tasks_provider.dart';

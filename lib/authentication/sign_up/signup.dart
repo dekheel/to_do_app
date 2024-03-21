@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:to_do_app/authentication/elevated_button.dart';
-import 'package:to_do_app/authentication/text_form_field.dart';
+import 'package:to_do_app/authentication/widgets/elevated_button.dart';
+import 'package:to_do_app/authentication/widgets/text_form_field.dart';
 import 'package:to_do_app/firebaseUtils.dart';
 import 'package:to_do_app/my_theme.dart';
 
@@ -161,7 +161,7 @@ class _SignUpState extends State<SignUp> {
                           height: screenSize.height * .02,
                         ),
                         CustomElevatedButton(
-                          getColor: checkTextField(),
+                          enable: checkTextField(),
                           onPressed: signUp,
                           buttonText: appLocalization.sign_up,
                         )
