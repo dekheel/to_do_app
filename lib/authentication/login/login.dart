@@ -4,6 +4,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 import 'package:to_do_app/authentication/login/login_abstract_navigator.dart';
 import 'package:to_do_app/authentication/login/login_screen_view_model.dart';
+import 'package:to_do_app/authentication/sign_up/signup.dart';
 import 'package:to_do_app/authentication/widgets/elevated_button.dart';
 import 'package:to_do_app/authentication/widgets/text_form_field.dart';
 import 'package:to_do_app/dialog_utils.dart';
@@ -12,6 +13,8 @@ import 'package:to_do_app/model/user_model.dart';
 import 'package:to_do_app/my_theme.dart';
 import 'package:to_do_app/provider/app_config_provider.dart';
 import 'package:to_do_app/provider/user_provider.dart';
+
+import '../reset_pass/reset.dart';
 
 class LogIn extends StatefulWidget {
   static String routeName = "LogIn";
@@ -91,6 +94,8 @@ class _LogInState extends State<LogIn> implements LoginNavigator {
   @override
   void pushNamedSignup() {
     // TODO: implement pushNamedSignup
+    Navigator.pushNamedAndRemoveUntil(
+        context, SignUp.routeName, (Route<dynamic> route) => false);
   }
 
   @override
@@ -215,7 +220,8 @@ class _LogInState extends State<LogIn> implements LoginNavigator {
                         ),
                         TextButton(
                           onPressed: () {
-                            // Navigator.pushNamed(context, ResetPassword.routeName);
+                            Navigator.pushNamed(
+                                context, ResetPassword.routeName);
                           },
                           child: Text(
                             appLocalization.forget_password,
@@ -233,7 +239,7 @@ class _LogInState extends State<LogIn> implements LoginNavigator {
                             buttonText: appLocalization.log_in),
                         TextButton(
                           onPressed: () {
-                            // Navigator.pushNamed(context, SignUp.routeName);
+                            pushNamedSignup();
                           },
                           child: Text(
                             appLocalization.create_new_account,

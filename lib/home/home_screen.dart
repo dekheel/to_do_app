@@ -24,7 +24,7 @@ class _HomeScreenState extends State<HomeScreen> {
   int selectedIndex = 0;
   late AppLocalizations? _appLocalizations;
 
-  late String appBarTitle;
+  String appBarTitle = '';
 
   @override
   Widget build(BuildContext context) {
@@ -36,9 +36,11 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       resizeToAvoidBottomInset: true,
       appBar: AppBar(
-        title: Text("${_appLocalizations!.to_do_list_app_bar}${{
-          user_provider.currentUser!.name
-        }}"),
+        title: appBarTitle.isEmpty
+            ? Text("${_appLocalizations!.to_do_list_app_bar}${{
+                user_provider.currentUser!.name
+              }}")
+            : Text(appBarTitle),
         toolbarHeight: MediaQuery.of(context).size.height * .12,
         actions: [
           IconButton(
@@ -68,7 +70,7 @@ class _HomeScreenState extends State<HomeScreen> {
               appBarTitle = "${_appLocalizations!.to_do_list_app_bar}${{
                 user_provider.currentUser!.name
               }}";
-              _appLocalizations!.to_do_list_app_bar;
+              // _appLocalizations!.to_do_list_app_bar;
             } else {
               appBarTitle = _appLocalizations!.settings_app_bar;
             }
